@@ -1,9 +1,9 @@
-.bg-custom {
+/*.bg-custom {
   background: url(../../assets/fundo.png);
   background-size: cover;
   background-position: center;
-  position: relative; /* Necessário para o pseudo-elemento */
-}
+  position: relative; /* Necessário para o pseudo-elemento 
+}*/
 
 .bg-custom::before {
   content: '';

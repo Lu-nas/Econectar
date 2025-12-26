@@ -18,18 +18,7 @@ function DeletarServico() {
   const token = usuario.token
 
   async function buscarPorId(id: string) {
-    try {
-      await buscar(`/servico/${id}`, setServico, {
-        headers: {
-          'Authorization': token
-        }
-      })
-    } catch (error: any) {
-      if (error.toString().includes('403')) {
-        alert('O token expirou, favor logar novamente')
-        handleLogout()
-      }
-    }
+    await buscar(`/servico/${id}`, setServico);
   }
 
   useEffect(() => {
@@ -51,12 +40,7 @@ function DeletarServico() {
 
   async function deletarServico() {
     try {
-      await deletar(`/servico/${id}`, {
-        headers: {
-          'Authorization': token
-        }
-      })
-
+      await deletar(`/servico/${id}`);
       alert('Servico apagada com sucesso')
 
     } catch (error) {

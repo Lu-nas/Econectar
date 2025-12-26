@@ -10,6 +10,6 @@ module.exports = {
         'azul-padrao': '#4158A6',
     },
   },
+  },
   plugins: [],
-}
 }

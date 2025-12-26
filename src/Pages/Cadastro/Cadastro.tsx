@@ -1,9 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './Cadastro.css';
-import Usuario from '../../Models/Usuario';
+import './Cadastro.css'; 
 import { cadastrarUsuario } from '../../Service/Services';
 import LogoPerry from '../../assets/NewIcon.png';
+import { Usuario } from '../../Models/Usuario';
 
 
 function Cadastro() {
@@ -14,30 +14,34 @@ function Cadastro() {
     const [usuario, setUsuario] = useState<Usuario>({
         id: 0,
         nome: '',
-        usuario: '',
+        email: '',
         senha: '',
         foto: '',
         cpf: '',
         endereco: '',
-        dataNascimento: new Date()
+        dataNascimento: new Date(),
+        servicosVendidos: [],
+        servicosComprados: []
     });
 
     const [usuarioResposta, setUsuarioResposta] = useState<Usuario>({
         id: 0,
         nome: '',
-        usuario: '',
+        email: '',
         senha: '',
         foto: '',
         cpf: '',
         endereco: '',
-        dataNascimento: new Date()
+        dataNascimento: new Date(),
+        servicosVendidos: [],
+        servicosComprados:[]
     });
 
     useEffect(() => {
         if (usuarioResposta.id !== 0) {
             back();
         }
-    }, [usuarioResposta]);
+    }, [usuarioResposta.id]);
 
     function back() {
         navigate('/login');
@@ -49,8 +53,14 @@ function Cadastro() {
 
     function atualizarEstado(e: ChangeEvent<HTMLInputElement>) {
         setUsuario({
-            ...usuario,
-            [e.target.name]: e.target.value
+        ...usuario,
+        [e.target.name]: e.target.value
+        });
+    }
+    function atualizarData(e: ChangeEvent<HTMLInputElement>) {
+        setUsuario({
+        ...usuario,
+        dataNascimento: new Date(e.target.value)
         });
     }
 
@@ -59,10 +69,12 @@ function Cadastro() {
 
         if (confirmaSenha === usuario.senha && usuario.senha.length >= 8) {
             try {
-                if(usuario.foto == "" || usuario.foto == null){
-                    usuario.foto =  LogoPerry 
-                }
-                await cadastrarUsuario(`/usuarios/cadastrar`, usuario, setUsuarioResposta);
+                const usuarioParaCadastro = {
+                ...usuario,
+                foto: usuario.foto ? usuario.foto : LogoPerry
+            };
+                await cadastrarUsuario(`/usuarios/cadastrar`,
+                    usuarioParaCadastro, setUsuarioResposta);
                 alert('Usuário cadastrado com sucesso');
             } catch (error) {
                 alert('Erro ao cadastrar o Usuário');
@@ -82,9 +94,9 @@ function Cadastro() {
                 <h2 className="text-2xl font-bold text-center text-indigo-700 mb-8">Cadastro</h2>
                 <div className="columns-2 gap-10">
                 <div className="mb-4">
-                    <label htmlFor="usuario" className="block text-gray-700 mb-2">Email:</label>
-                    <input type="email" id="usuario" name="usuario" required className="w-full ring-2 ring-gray-300 px-3 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    value={usuario.usuario}
+                    <label htmlFor="email" className="block text-gray-700 mb-2">Email:</label>
+                    <input type="email" id="email" name="email" required className="w-full ring-2 ring-gray-300 px-3 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    value={usuario.email}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}/>
                 </div>
                 <div className="mb-4">
@@ -108,8 +120,8 @@ function Cadastro() {
                 <div className="mb-4">
                     <label htmlFor="dataNascimento" className="block text-gray-700 mb-2">Data Nascimento:</label>
                     <input type="date" id="dataNascimento" name="dataNascimento" required className="w-full px-3 ring-2 ring-gray-300 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    value={usuario.dataNascimento.toString()}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
+                    value={usuario.dataNascimento.toISOString().split('T')[0]}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarData(e)}
                     />
                 </div>
                 <div className="mb-6">

@@ -7,69 +7,51 @@ import { toastAlerta } from '../../Util/Toastalert';
 
 function FormularioCategoria() {
   const [categoria, setCategoria] = useState<Categoria>({} as Categoria);
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { usuario, handleLogout } = useContext(AuthContext);
-  const token = usuario.token;
+  const { usuario } = useContext(AuthContext);
+
 
   async function buscarPorId(id: string) {
-    await buscar(`/categorias/${id}`, setCategoria, {
-      headers: {
-        Authorization: token,
-      },
-    });
+    await buscar(`/categorias/${id}`, setCategoria);
   }
+
+  function atualizarEstado(e: ChangeEvent<HTMLInputElement>) 
+  { setCategoria({ ...categoria, [e.target.name]: e.target.value, }); }
+
+  async function gerarNovaCategoria(e: ChangeEvent<HTMLFormElement>) {
+    e.preventDefault(); 
+
+      try {
+      if (id !== undefined) { 
+        await atualizar(`/categorias`, categoria, setCategoria);
+        alert('Categoria atualizado com sucesso');
+      } else {
+        await cadastrar(`/categorias`, categoria, setCategoria);
+        alert('Categoria cadastrada com sucesso');
+      }
+    retornar(); 
+  } catch (error) {
+    toastAlerta('Erro ao salvar categoria', 'erro');}
+  } 
+
+  function retornar() {
+    navigate('/categoria');
+  } 
+
+  useEffect(() => {
+    if (!usuario.token) {
+      toastAlerta('Faça login para ver os serviços disponiveis!.', 'erro')
+      navigate('/login');
+    }
+  }, [usuario.token]);
 
   useEffect(() => {
     if (id !== undefined) {
       buscarPorId(id);
     }
   }, [id]);
-
-  function atualizarEstado(e: ChangeEvent<HTMLInputElement>) {
-    setCategoria({
-      ...categoria,
-      [e.target.name]: e.target.value
-    });
-  }
-
-  async function gerarNovaCategoria(e: ChangeEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    try {
-      if (id !== undefined) {
-        await atualizar(`/categorias`, categoria, setCategoria, {
-          headers: { 'Authorization': token }
-        });
-        alert('Categoria atualizado com sucesso');
-      } else {
-        await cadastrar(`/categorias`, categoria, setCategoria, {
-          headers: { 'Authorization': token }
-        });
-        alert('Categoria cadastrada com sucesso');
-      }
-      retornar();
-    } catch (error: any) {
-      if (error.toString().includes('403')) {
-        alert('O token expirou, favor logar novamente');
-        handleLogout();
-      } else {
-        alert(`Erro ao ${id !== undefined ? 'atualizar' : 'cadastrar'} a categoria`);
-      }
-    }
-  }
-
-  function retornar() {
-    navigate('/categoria');
-  }
-
-  useEffect(() => {
-    if (usuario.token === '') {
-      toastAlerta('Faça login para ver os serviços disponiveis!.', 'erro')
-      navigate('/login');
-    }
-  }, [usuario.token, navigate]);
-
+  
   return (
     <div className="container flex flex-col items-center justify-center mx-auto">
       <h1 className="text-4xl text-center my-8 text-dark">
@@ -107,6 +89,6 @@ function FormularioCategoria() {
       </form>
     </div>
   );
-}
 
+} 
 export default FormularioCategoria;

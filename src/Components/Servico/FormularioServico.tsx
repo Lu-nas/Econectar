@@ -4,6 +4,7 @@ import { AuthContext } from '../../Context/AuthContext';
 import Categoria from '../../Models/Categoria';
 import { atualizar, buscar, cadastrar } from '../../Service/Services';
 import { UsuarioLogin } from '../../Models/UsuarioLogin'; // Import the correct type for UsuarioLogin
+import { Servico } from './ModalServico';
 
 
 function FormularioServico() {
@@ -23,45 +24,26 @@ function FormularioServico() {
   });
 
   
-  const [servico, setServico] = useState({
-    id: 0,
+  const [servico, setServico] = useState<Servico>({
     nomeServico: '',
     descricao: '',
-    valor: 0,
-    sobreMim: '',
-    status: '',
-    vendedor: {} as UsuarioLogin, // Update the type of vendedor to UsuarioLogin
-    comprador: null,
-    categoria: {
-      id: 0,
-      nomeCategoria: '',
-      descricao: '',
-    },
+    valor: 0 ,
+    sobreMim: '', 
+    vendedor: {id: usuario.id},
+    categoria: {} as Partial<Categoria>
   });
 
   async function buscarServicoPorId(id: string) {
-    await buscar(`/servico/${id}`, setServico, {
-      headers: {
-        Authorization: token,
-      },
-    });
+    await buscar(`/servico/${id}`, setServico);
   }
+  
 
   async function buscarCategoriaPorId(id: string) {
-    await buscar(`/categorias/${id}`, setCategoria, {
-      headers: {
-        Authorization: token,
-      },
-    });
-  }
-
+    await buscar(`/categorias/${id}`, setCategoria);
+  } 
 
   async function buscarCategorias() {
-    await buscar('/categorias', setCategorias, {
-      headers: {
-        Authorization: token,
-      },
-    });
+    await buscar('/categorias', setCategorias);
   }
 
   useEffect(() => {
@@ -76,22 +58,14 @@ function FormularioServico() {
     if (id !== undefined) {
       buscarServicoPorId(id);
     }
-  }, [id]);
-
-  useEffect(() => {
-    setServico({
-      ...servico,
-      categoria: categoria,
-      vendedor: usuario, // Atualiza o estado do serviço com o usuário logado
-    });
-  }, [categoria, usuario]);
+  }, [id]); 
 
   function atualizarEstado(e: ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+
     setServico({
       ...servico,
-      [e.target.name]: e.target.value,
-      categoria: categoria,
-      vendedor: usuario,
+      [name]: name === 'valor' ? Number(value) : value
     });
   }
 
@@ -102,76 +76,25 @@ function FormularioServico() {
    async function gerarNovoServico(e: ChangeEvent<HTMLFormElement>) {
     e.preventDefault();
   
-    // Construa o objeto JSON conforme o formato esperado
-    const dadosServico = {
-      id: servico.id || 0,
-      nomeServico: servico.nomeServico || '',
-      descricao: servico.descricao || '',
-      valor: Number(servico.valor) || 0, // Converta o valor para número
-      sobreMim: servico.sobreMim || '',
-      status: servico.status || '',
-      vendedor: {
-        id: servico.vendedor?.id || 0,
-        usuario: servico.vendedor?.usuario || '',
-        nome: servico.vendedor?.nome || '',
-        senha: servico.vendedor?.senha || '',
-        endereco: servico.vendedor?.endereco || '',
-        cpf: servico.vendedor?.cpf || '',
-        dataNascimento: typeof servico.vendedor?.dataNascimento === 'object' ? (servico.vendedor.dataNascimento as Date).toISOString().split('T')[0] : '', // Converta para string
-        foto: servico.vendedor?.foto || '',
-        servicosVendidos: servico.vendedor?.servicosVendidos || [],
-        servicosComprados: servico.vendedor?.servicosComprados || [],
-      },
-      comprador: servico.comprador || null, // Pode ser null se não houver comprador
-      categoria: {
-        id: servico.categoria?.id || 0,
-        nomeCategoria: servico.categoria?.nomeCategoria || '',
-        descricao: servico.categoria?.descricao || '',
-      },
-    };
-  
-    console.log('Dados do serviço:', dadosServico); // Adicione este log para verificar os dados
-  
-    try {
-      if (id != undefined) {
-        await atualizar(`/servico/atualizar`, dadosServico, setServico, {
-          headers: {
-            Authorization: token,
-          },
-        });
-        alert('Servico atualizado com sucesso');
-      } else {
-        await cadastrar(`/servico`, dadosServico, setServico, {
-          headers: {
-            Authorization: token,
-          },
-        });
-        alert('Servico cadastrado com sucesso');
-      }
-      retornar();
-    } catch (error: any) {
-      console.error('Erro ao cadastrar/atualizar o serviço:', error);
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.error('Erro ao cadastrar/atualizar o serviço:', error.response.data);
-        if (error.response.status === 401) {
-          alert('O token expirou, favor logar novamente');
-          handleLogout();
-        } else {
-          alert('Erro ao cadastrar/atualizar o Servico');
-        }
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error('Erro ao cadastrar/atualizar o serviço: Sem resposta do servidor', error.request);
-        alert('Erro ao cadastrar/atualizar o Servico: Sem resposta do servidor');
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.error('Erro ao cadastrar/atualizar o serviço:', error.message);
-        alert('Erro ao cadastrar/atualizar o Servico');
-      }
+    try{
+      if (id) {
+      await atualizar('/servico/atualizar', servico, setServico);
+      alert('Serviço atualizado com sucesso');
+    } else {
+      await cadastrar('/servico', servico, setServico);
+      alert('Serviço cadastrado com sucesso');
+    }
+    navigate('/servico');
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      alert('Sessão expirada');
+      handleLogout();
+    }else {
+      alert('Erro ao salvar serviço');
     }
   }
+}
+    
   const carregandoCategoria = categoria.descricao === '';
 
   return (
@@ -227,14 +150,20 @@ function FormularioServico() {
             className="border-2 border-slate-700 rounded p-2"
           />
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="border p-2 border-slate-800 rounded">
           <p>Categoria do Servico</p>
-          <select name="categorias" id="categorias" className='border p-2 border-slate-800 rounded' onChange={(e) => buscarCategoriaPorId(e.currentTarget.value)}>
-            <option value="" selected disabled>Selecione uma categoria</option>
-            {categorias.map((categoria) => (
-              <>
-                <option value={categoria.id} >{categoria.nomeCategoria}</option>
-              </>
+          <select 
+            onChange={(e) => setServico({...servico,
+              categoria: { id: Number(e.target.value) }
+            })
+            }
+             className="border p-2 border-slate-800 rounded">
+
+            <option value="" disabled>Selecione uma categoria</option>
+              {categorias.map(cat => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.nomeCategoria}
+                </option>
             ))}
           </select>
         </div>

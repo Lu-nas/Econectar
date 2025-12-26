@@ -19,11 +19,11 @@ function CardServico({ serv }: CardServicoProps) {
         <p>{serv.descricao}</p>
         {/* <p>Categoria: {serv.Categoria?.nomeCategoria}</p> */}
         <p className='font-bold'>Valor: {serv.valor.toFixed(2)}</p>
-        <div className='mt-auto text-center'>
-          <p><ModalSabermais serv={serv}/></p>
+        <div className="mt-auto text-center">
+          <ModalSabermais serv={serv}/>
         </div>
       </div>
-      <div className='card-servico-footer'>
+      <div className="card-servico-footer">
         <Link to={`/editarServico/${serv.id}`} className='edit-button'>
           <button>Editar</button>
         </Link>

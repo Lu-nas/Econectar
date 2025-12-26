@@ -10,53 +10,49 @@
 
   function ListaCategorias() {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
-
-    let navigate = useNavigate();
-
-    const { usuario, handleLogout } = useContext(AuthContext);
-    const token = usuario.token;
+    const [isLoading, setIsLoading] = useState(true);
+    
+    const navigate = useNavigate();
+    const { usuario } = useContext(AuthContext);
+    
 
     async function buscarCategorias() {
-      try {
-        await buscar('/categorias', setCategorias, {
-          headers: { Authorization: token },
-        });
-      } catch (error: any) {
-        if(error.toString().includes('403')) {
-          toastAlerta('O token expirou, favor logar novamente', 'info')
-          handleLogout()
-        }
-      }
+      setIsLoading(true);
+      await buscar('/categorias', setCategorias);
+      setIsLoading(false); 
     }
-
+  
     useEffect(() => {
-      if (usuario.token === '') {
+      if (!usuario.token) {
         toastAlerta('Faça login para ver os serviços disponiveis!.', 'erro')
         navigate('/login');
       }
-    }, [usuario.token, navigate]);
+    }, [usuario.token]);
 
     useEffect(() => {
       buscarCategorias();
-    }, [categorias.length]);
+    }, []);
 
     return (
       <>
-        {categorias.length === 0 && (
+        {isLoading && (
           <Dna
             visible={true}
             height="200"
             width="200"
             ariaLabel="dna-loading"
-            wrapperStyle={{}}
-            wrapperClass="dna-wrapper mx-auto"
+            wrapperClass="dna-wrapper mx-auto" 
           />
         )}
-        <div className='text-center flex justify-center'><img src={LogoEconectar} alt="" /></div>
+
+        <div className='text-center flex justify-center'>
+          <img src={LogoEconectar} alt="Econectar" />
+        </div>
+
         <div className="flex justify-center w-full my-4">
           <div className="container flex flex-col">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array.isArray(categorias) && categorias.map((categoria) => (
+              { categorias.map((categoria) => (
                 <CardCategorias key={categoria.id} categoria={categoria} />
               ))}
             </div>
