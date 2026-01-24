@@ -1,7 +1,8 @@
 # Econectar — Frontend (React + Vite)
 
 
-Este repositório corresponde ao projeto **Econectar**, desenvolvido com React + Vite,foco acadêmico e de portfólio, evidencia decisões arquiteturais, com integração backend e ecolução incremental do software.
+Este repositório corresponde ao **frontend do projeto Econectar**, desenvolvido com React + Vite, com foco acadêmico e de portfólio.
+O projeto evidencia decisões arquiteturais, integração backend e evolução incremental do software.
 
 ---
 
@@ -23,7 +24,7 @@ O backend é uma API REST desenvolvida em Java com Spring Boot, responsável pel
 #### Principais pontos consolidados:
 
 * Uso de DTOs de resposta para controle de contratos da API
-* Testes unitários e de integração
+* Testes unitários e de integração (postman)
 * Documentação via Swagger/OpenAPI
 * Estado: estável, funcional e documentado 
 
@@ -36,7 +37,7 @@ Melhorias como paginação, ordenação e tratamento global de exceções, foram
 
 ### 🔧 Frontend — Refatoração em andamento
 
-O frontend está passando por uma **refatoração estrutural de arquitetura**, registrada em commit único para manter a coerência histórica do projeto.
+O frontend está passando por uma **refatoração estrutural de arquitetura**, registrada em um **commit consolidado** para manter a coerência histórica do projeto.
 
 #### Objetivos da refatoração:
 
@@ -45,17 +46,19 @@ O frontend está passando por uma **refatoração estrutural de arquitetura**, r
 * Preparar a aplicação para integração incremental com a API
 * Facilitar manutenção, escalabilidade e clareza de responsabilidades
 
-⚠️ **Importante:** no estado atual, o frontend ainda não está totalmente funcional. Os commits registrados representam um *checkpoint técnico* da transição arquitetural.
+⚠️ **Importante:** O frontend ainda não está totalmente funcional. Os commits registrados representam um *checkpoint técnico* da transição arquitetural.
 
 ---
 
 ### 🔗 Comunicação com o backend
 
-A base de comunicação com o backend já está implementada, utilizando **Axios** com interceptors:
+A base de comunicação com o backend já está implementada, utilizando **Axios** com interceptors configurados para:
 
-* Configuração de `baseURL`
-* Interceptor de requisição com envio automático de token JWT
-* Interceptor de resposta para tratamento inicial de erros HTTP (ex: 401)
+* Definição de `baseURL`
+* Envio automático de token JWT nas requisições
+* Tratamento inicial de erros HTTP (ex: 401 — sessão expirada)
+
+📄 Arquivo de configuração: `src/services/api.ts` 
 
 Essa camada será evoluída gradualmente para cobrir outros cenários de erro e refinamentos.
 
@@ -63,14 +66,51 @@ Essa camada será evoluída gradualmente para cobrir outros cenários de erro e 
 
 ### 👣  Próximos passos planejados (Frontend)
 
-A evolução do frontend seguirá uma estratégia incremental com descritivos:
+A evolução do frontend seguirá uma estratégia incremental:
 
-1. **Consumo inicial de endpoints reais do backend** (ex: listagem de serviços)
+1. **Consumir endpoints reais do backend** (ex: listagem de serviços)
 2. **Implementação e refinamento do contexto de autenticação**, com foco em UX
-3. **Centralização mais completa do tratamento de erros HTTP**
-4. **Ajustes de tipagem e alinhamento dos contratos de resposta**
-5. **Refinamento visual**
+3. **Centralizar de forma mais completa do tratamento de erros HTTP**
+4. **Ajustar tipagens e alinhar contratos de resposta**
+5. **Refinar a interface**
 
+---
+
+## Como rodar o projeto localmente 
+
+### Pré-requisitos
+
+Certifique-se de ter instalado em sua máquina:
+
+- Node.js (versão 18 ou superior)
+- npm ou yarn
+- Git
+- Backend do projeto Econectar em execução
+
+---
+#### Clonando o repositório
+
+```bash
+
+git clone https://github.com/Lu-nas/Econectar.git
+
+cd Econectar
+
+```
+#### Instalando dependências:
+
+npm install
+
+ou, se utilizar yarn:
+
+yarn install
+
+#### Executando o projeto:
+
+npm run dev
+
+
+⚠️ Observação:  Caso o backend não esteja ativo ou acessível, algumas funcionalidades do frontend poderão não funcionar corretamente.
 ---
 
 ### 🎓 Observação acadêmica
