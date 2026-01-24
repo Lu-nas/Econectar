@@ -88,7 +88,8 @@ Certifique-se de ter instalado em sua máquina:
 - Backend do projeto Econectar em execução
 
 ---
-#### Clonando o repositório
+
+### Clonando o repositório
 
 ```bash
 
@@ -98,22 +99,23 @@ cd Econectar
 
 ```
 #### Instalando dependências:
-
+```
 npm install
-
+```
 ou, se utilizar yarn:
-
+```
 yarn install
-
-#### Executando o projeto:
-
+```
+Executando o projeto:
+```
 npm run dev
-
+```
 
 ⚠️ Observação:  Caso o backend não esteja ativo ou acessível, algumas funcionalidades do frontend poderão não funcionar corretamente.
+
 ---
 
 ### 🎓 Observação acadêmica
 
 Este projeto prioriza **decisões técnicas conscientes** em vez de apenas funcionalidades completas, evidenciando o processo de evolução do software — aspecto valorizado tanto em contextos acadêmicos quanto profissionais.
-
+ 
